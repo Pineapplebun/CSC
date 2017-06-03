@@ -232,7 +232,7 @@ public class StormTest {
 	public void testStormToStringNoCities() {
 		Storm s1 = new Storm("Danielle", 2016);
 		String res = s1.toString();
-		String exp = "The Thing, 2016";
+		String exp = "Danielle";
 		assertEquals(exp, res);
 	}
 

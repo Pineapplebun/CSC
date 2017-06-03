@@ -49,7 +49,7 @@ public class Storm {
 
 	public String toString() {
 		if (cities.isEmpty()) {
-			return "The Thing, 2016";
+			return this.getName();
 		}
 		else {
 			String s = this.name + ", " + this.year;

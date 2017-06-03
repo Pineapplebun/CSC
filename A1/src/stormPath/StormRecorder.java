@@ -13,7 +13,7 @@ import java.util.*;
 public class StormRecorder {
 	public static void main(String[] args) {
 		Charset encoding = Charset.forName("UTF-8");
-		Path file = Paths.get("D:\\google-drive\\Year 4\\CSC207\\Labs and Assignments\\A1\\src\\stormPath\\Stormlist.txt");
+		Path file = Paths.get("Stormlist.txt");
 
 		//ArrayList<Storm> storms = new ArrayList<Storm>();
 		//ArrayList<City> cities = new ArrayList<City>();
