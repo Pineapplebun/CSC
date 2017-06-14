@@ -23,10 +23,10 @@ public class StormRecorder {
 		try (BufferedReader reader = Files.newBufferedReader(file, encoding)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
+				//System.out.println(line);
 				String[] data = line.split("\\s\\|\\s*");
 				//System.out.println(data[0]);
-				System.out.println(data[1]);
+				//System.out.println(data[1]);
 				//System.out.println(data[2]);
 
 				String[] nameyear = data[0].split("\\s");
@@ -58,7 +58,7 @@ public class StormRecorder {
 				run = false;
 			} else {
 				boolean found = false;
-				System.out.println(cities.size());
+				//System.out.println(cities.size());
 				if (cities.containsKey(input)) {
 					System.out.println(cities.get(input));
 				}
