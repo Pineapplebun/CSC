@@ -1,0 +1,9 @@
+Type,ID,Name
+grocerystore.Manager,1,George
+grocerystore.Cashier,2,Sally
+grocerystore.Cashier,3,Bob
+grocerystore.Cashier,4,Carlo
+grocerystore.Receiver,5,Sam
+grocerystore.Receiver,6,Ella
+grocerystore.Reshelver,7,Kate
+grocerystore.Reshelver,8,James

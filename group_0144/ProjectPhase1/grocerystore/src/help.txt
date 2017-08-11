@@ -1,0 +1,155 @@
+help:
+
+How to run the program:
+Run the main method in StoreSimulation VIA IntelliJ.(We used IntelliJ to run it not command line)
+We added in some System.out.prinln lines to our StoreSimulation so that we could follow through the process and identify what happened at where.
+
+Instructions to create a new line in events.txt 1))-7))
+
+**EVENTS.TXT IS CASE SENSITIVE. ALL ACTIONS MUST RESPECT THE CASE ORDER**
+1.)) OVERVIEW:
+Each line should contain four words divided by a space from one another. The four words
+should be [Worker, id, Action, Object]
+Worker types: Cashier, Manager, Reciever, Reshelver
+id: an integer specific to that worker.
+Action types: setActive, SetupStore, addToCart, checkout, changeQuantity, addToSaleCart, putsOnSale, clearSaleCart, checkSaleHistory, 
+changeRegPrice, createBackOrderFile, checkLocation, checkCost, checkProfitHistory, reshelvesCart, newShipment, checkoutNew,
+changeDefaultQuantity, clearCart, checkAisleProducts, changeProductLocation, checksCurrQuantity, checkPendingOrders, editPendingOrder,
+sendOrders, queryLocation, queryPrice, querySection, queryQuantity, checkOnSale, closeStore, readStore, checkTotalProfit.
+
+Object types: <<upc,price>>, <<upc,quantity>>, cart, status, <<yyyy-mm-ddThh:mm:ss,yyyy-mm-ddThh:mm:ss>>, <<product, aisle>>, int aisle
+
+2.)) Rules for Setup and Starting Workers:
+- The manager must setup the store before anything else happens. This will setup initialworkers and
+setup the store.
+Example Line: Manager 3 SetupStore status
+
+For the workers, there are only these 4 types. A file containing the information about these workers  
+(their type, unique id, and names) in InitialWorkers.csv needs to be read in during initial setup. If you would like
+to change the file that is read in go under StoreSimulation, there is a class variable called workerInitialFile. Have the
+string name of the new file (which must be a .csv) be equal to it. Similar rules apply to the inventory the 
+inventoryInitialFile variable can be set from there as well. Make sure in both files that:
+	a) All columns are filled the way in example files (with the same required information in the same order.
+	b) A UPC of products and the id number of workers, are never used more than once for products and workers respectively.
+        c) All numbers are positive
+	d) No empty cells within the required columns
+
+3.)) General rules of events.txt (worker-related):
+	a) If nothing else, there must at least be a manager to open and close the store. Any other workers that appear in events.txt
+	should be within the .csv file. 
+	b) Before a worker is ever to carry out an event they need to be  setActive (indicating they are on shift) within events.txt (the 
+	only exception being the initial manager who sets up the store and then is set as active).
+	c) A worker cannot do anything to a product without it being added to the cart first so that line must be executed first.
+	d) Only use the “checkout” action after: A cashier is selling the items in the cart, A receiver is receiving the items in the cart, 
+	A reshelver reshelvesCart, Otherwise if they have added items to the cart only to do all other general worker tasks like 
+	checkLocation, once the task is complete use *clearCart(action rather than checkout in order to empty the cart.
+	e) For Cashier not specificallyy that the number of times scanned for that product CANNOT be more than the quantity of the
+	product. This is because in reality for example 5 apples can’t be sold for selling if the store only has 3 apples… its realistically
+	not possible so when typing the events.txt make sure to stick to real situation (the number of time scanned, i.e. the number
+	of products sold should be less than or equal to the quantity of that product.
+
+4.)) Rules for format of Object:
+	a) If it’s handling a product or dates it must always start with < and end with >, then within these brackets list all the 
+	products that were scanned in the format <UPC,NumberOfTimesScanned> if it is only this product the format of the 
+	object becomes <<UPC,NumberOfTimesScanned>>  if theres more than one product that is being scanned the format 
+	being <<UPCONE,NumberOfTimesScanned> ,<UPCTWO,NumberOfTimesScanned>>.. For dates, rather than the UPC and 
+	NumberOfTimesScanned, its just the <<startDate,endDate>> 
+	b) NOTICE: Nowhere within the object are there ANY spaces. Please have no spaces between commas or brackets.
+	c) the number of times scanned must be integers not doubles.
+	d) Even if only one item is scanned don’t have <<UPC>>, instead put <<UPC,1>>
+	e) Other objects: you can pass in an aisle number as simply the number. cart is the standard object to use whenever performing 
+	an action on the content added to a cart (i.e. checkout cart, reshelvesCart cart, checkoutNew cart, clearCart, sendOrders cart), 
+	status is used when a cart is not involved, newShipment.csv is the name of a file following the newShipment action (more details 
+	on this in 4.), 
+
+5.)) Rules for receiving products, two cases:
+	ONE) If this product was within the initialInventory set up file then the format of the line should be 
+	simply: Receiver *id* addToCart <<*UPC*,*timesScanned*>> Then once all the items which have been added to the cart need 
+	to be added to the inventory (since we’re receiving new units of pre-existing product) so useReceiver *id* checkout cart. 
+	TWO) These are new products, the upc codes are not within the initial set up files. The Receiver can’t just scan the UPC 
+	because it won’t work since the UPC does not exist within the system. Therefore before scanning or adding to cart any of these 
+	new products a .csv file needs to be created with the appropriate information about the products being scanned in (similar format 
+	to InitialItems.csv). If the name or file path of this item is newShipment.csv (as we have provided in our project) then the line in 
+	events.txt is as follows: Receiver *id* newShipment newShipment.csv. The action must always be newShipment. The object 
+	newShipment.csv can be replaced with your files. Then the products are added to cart as normal. Once only all the new products 
+	have been added, use the action checkoutNew to finish the process(i.e the line would be Receiver *id* checkoutNew cart).
+
+6.)) Reshelver events:
+	a)The receiver places items they have scanned into carts and when they are done they put the carts in the storage room. 
+	Reshelvers then go to the storage room and take those same carts and then put the items onto shelves. The Reshelver hence 
+	does not need to scan or addToCart again. If you wish to have the Reshelver resolve all the carts currently placed in the storage 
+	room previously by receivers, just call the line in the format: Reshelver *id* reshelvesCart cart. No need for checkout.
+7.)) Any worker:
+	Any worker can have the following actions: queryLocation, queryPrice, querySection, queryQuantity, addToCart, clearCart,  checkCost, checkLocation, changeQuantity, (note changeQuantity needs to have something added to
+	cart previously, same with checkLocation).
+8.)) Manager specifics:
+  There are actions that can be performed by a manager.
+  The Actions: [SetupStore, CloseStore, ReadStore, clearSaleCart, createBackOrderFile, checkProfitHistory,
+  changeDefaultQuantity, addToSaleCart, putsOnSale, checkSalePriceHistory, changeRegPrice, checkAisleProducts, checkPendingOrders,
+  editPendingOrder, sendOrders, updateStore, changeProductLocation, checkOnSale], checkTotalProfit (can only have one pair of dates (start and end)
+  to check for).
+9.)) Distributor Class:
+  The purpose of this class is mainly acting as an instance variable of a Product. A Distributor has a name and it is associated with a Product.
+  Every Product has a unique Distributor. In our program, when we send reorder requests, we do not directly deal with distributors which would only
+  happen in real life. Whenever we need reorder products, we make a pending order request, which waits for managers to approve. Once approved,
+  the reorder details will be recorded in History and logged, which indicates that we have made a reorder request.
+
+What our provided example of events.txt does:
+1) Manager 1 sets up the store. Inventory filled and initial workers are activated.
+2) Manager 1 is activated in the system
+3) Cashier 2 is activated
+4) Cashier 3 is activated
+5) Cashier 2 adds 1 of product with upc code 14100089001
+6) Cashier 2 changes the quantity added to the cart with upc code 14100089001 to 2
+7) Cashier 2 checks out the cart (This means it sells all the things in the cart and clears the cart)
+8) Cashier 3 adds 3 product with upc 72600034136 and 4 product with upc 21000611614
+9) Cashier 3 checks out the cart (note product 72600034136 only had quantity equal to 3 so now it is 0 as
+		3 of it have been sold, now this product is back ordered (will later see it again when the manager
+		creates a back order file with the info of all the back ordered items, just noting for your 
+		reference its from this moment).
+10) Manager 1 adds product with upc code 14500013521 and it's discount price to the cart he uses to put on sale.
+11) Manager 1 puts everything in his salecart on sale from 2017-07-24T10:10:10 to 2017-07-24T23:10:10
+12) Manager 1 clears his sale cart. Nothing is in the sale cart now.
+13) Similar line already applied before
+14) Similar line already applied before
+15) Manager 1 prints the history of products and when they were put on sale to what price
+16) Manager 1 adds three products with new prices for them to his cart
+17) Manager 1 changes those products' regular prices to the new prices
+18) Manager 1 clears the cart
+19) Manager 1 creates Back order file (recall 9) event)
+20) Receiver 5 is activated
+21) Receiver 5 adds three products of their quantities
+22) Receiver 5 checks cost of product with the upc given
+23) Receiver 5 checks location of product with upc given
+24) Receiver 5 puts all the products in the cart to storage room
+25) Manager 1 checks out profit made from 2017-07-24T00:00:00 to 2017-07-24T23:00:10
+26) Receiver 6 is activated
+27) Reshelver 7 is activated
+28) Reshelver 7 reshelves everything in the storage room
+29) Receiver 6 gets new shipment
+30) Receiver 6 adds three products with their quantities to new items cart
+31) Receiver 6 put products in new cart to storage room after registering them
+32) Manager 1 adds two products to his cart
+33) Manager 1 changes threshold of a product with upc code 42272009480 to 50
+34) Manager 1 clears cart
+35) Manager 1 checks what products are in aisle 1
+36) Manager 1 changes the location of product with upc code 52159002015 to aisle 1
+37) Manager 1 checks what products are in aisle 1
+38) Manager 1 clears cart
+39) Reshelver 7 adds 1 product with upc code 62338879772 to cart
+40) Reshelver 7 checks how many of product with upc code 62338879772 are in inventory
+41) Reshelver 7 clears cart
+42) Manager 1 checks whether there are pending orders or not
+43) Manager 1 edits product with upc code 21000611614 to 50 in pendingorder
+44) Manager 1 sends orders of everything in the cart
+45) Manager 1 adds 1 of product with upc code 24131174102 and 50 of 21000611614
+46) Manager 1 asks where 24131174102 and 21000611614 are
+47) Manager 1 asks the current price of 24131174102 and 21000611614
+48) Manager 1 asks what section 24131174102 and 21000611614 are
+49) Manager 1 asks how many 24131174102 and 21000611614 there are currently
+50) Manager 1 checks what products are on sale
+51) Manager 1 checks total profit from 2017-07-24T10:10:10 to 2017-07-24T23:10:10
+52) Manager 1 closes the store. workers are deactivated
+53) Manager 1 deserializes inventory
+54) Manager 1 is activated
+55) Manager 1 updates the store

@@ -1,0 +1,32 @@
+Outline of duties for Group_0144
+
+Name: Kai Chen
+1. Responsible for implementation of Product.java, Distributor.java, and Reshelver.java.
+2. Participated in implementation of StoreSimulation.java; for example, Serialization and Deserialization.
+3. Worked on Javadocs and implementation comments for Cashier.java, Distributor.java, Manager.java, Product.java,
+Receiver.java, Reshelver.java, Worker.java, and StoreSimulation.java.
+4. Responsible for UML diagrams for all classes.
+5. Participated in debugging and testing of the program.
+
+Name: Rima El-sayed
+
+1. Responsible for creating Inventory.java (with javadoc), Reshelver.java (with javadoc), and half of StoreSimulation.java 
+2. Created all input files (InitialItems.csv, InitialWorkers.csv, newShipment.csv)
+3. Created half of helper.txt (numbers 2.)) to 6.)))
+4. Heavily helped in constructing events.txt (along with Kevin).
+5. Participated in debugging and testing of the program.
+
+Name: Kevin Chen
+
+1. Responsible for creating Manager.java, Cashier.java, Worker.java, StoreSimulation.java (parts)
+2. Created half of events.txt
+3. Helped out everyone with git ;)
+4. Helped design the class hierarchy and relationships of the program
+5. Participated in debugging and testing of the program.
+6. Added print statements to help TAs run their code (further elaborated in help.txt)
+
+Name: Jinsoo Choi
+1. Responsible for History.java and HistoryObject.java
+2. Participated in implmentating managerevent in StoreSimulation and help.txt information of what happens for each line
+3. Javadocs and implementation comments for History.java and HistoryObject.java
+4. Debugging and testing the program

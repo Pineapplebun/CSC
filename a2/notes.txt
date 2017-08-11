@@ -1,0 +1,344 @@
+#########
+# Step 1
+
+Code affected: none
+
+Created this file.
+
+#########
+# Step 2
+
+Code affected: all .java files
+
+Reformatted using the Google Java style formatter.
+
+#########
+# Step 3
+
+Code affected: SwitchRail
+
+Flaws:
+SwitchRail does not turn to the third exit since neighbour 3 was not defined. exit method was
+incomplete and did not account for neighbour3 and end3. SwitchRail keeps going even when rail is
+drawn disconnected.
+
+Fixes:
+exit method now added support for end3.
+register method now registers neighbour3.
+unRegister method now unregisters neighbour3.
+nextRail now directs end1 to end3 and vice versa.
+
+#########
+# Step 4
+
+Code affected: SwitchRail, TwoEndRail, Car, CrossRail
+
+Flaws:
+Car would not stop even when Rails were not aligned properly in SwitchRail and TwoEndRail.
+Rail methods exit, nextRail returned null values and were incomplete which caused problems
+when car was turning.
+
+Fixed:
+Modified Car to stop moving if nextRail and Rail returns itself.
+Modified nextRail and exit methods in SwitchRail, TwoEndRail, CrossRail to return the correct
+adjacent rail and direction, otherwise, return the rail itself and the direction passed
+respectively.
+
+#########
+# Step 5
+
+Code Affected: Track, TrackPanel, Train, CrossRail, TwoEndRail, SwitchRail, EmptyRail, Rail
+
+Flaws:
+Access in variables and methods that are mainly backend such as rendering should be made as close to
+private as possible.
+Since the nextRails method was previously made to return the object that called it when there was
+an invalid route, EmptyRail should also return itself rather than null.
+
+Fixed:
+Added the tightest modifiers possible to methods and variables without breaking any current code.
+Examples: "validDir" in the Rail subclasses and "size" in Rail class, etc.
+Modified EmptyRail nextRail method to return the EmptyRail instance that called it.
+
+#########
+# Step 6
+
+Code Affected: SwitchRail, TwoEndRail, CrossRail, Rail
+
+Flaws:
+arcAngle variable is only used within StraightRail class so private is best.
+stateChanged is never used, useless code.
+validDir is duplicate code used by most of the subclasses of Rail.
+
+Fixed:
+made arcAngle variable private.
+removed boolean variable stateChanged in Rail since never used.
+added validDir to Rail class since it's better as an inherited method.
+
+#########
+# Step 7
+
+Code Affected: SwitchRail, Car
+
+Flaws:
+Car method SwitchCorner() is a useless function that always returns false.
+Car method SwitchStraight() can be useful for drawing but incomplete.
+Cars can pass each other.
+
+Fixes:
+Added boolean getter method "isGoingStraight" in SwitchRail to know when it is straight.
+Removed SwitchCorner and modified SwitchStraight to use isGoingStraight.
+Modified move method in Car.
+
+#########
+# Step 8
+
+Code Affected: CrossRail, Rail
+
+Flaws:
+Trains do not stop in its currentRail before entering an unaligned neighbouring Rails.
+There should be no print statements in validDir:
+
+"System.err.print("exit(): Not a valid dir for this piece: ");
+      System.err.println(this + " " + d.direction);
+      Exception e = new Exception();
+      e.printStackTrace(System.out);"
+
+should be throwing a runtimeException if the user specifies a rail-incompatible direction when
+adding the train to the track, or left alone since the nextRail method will stop the train.
+
+Fixed:
+Modified nextRail method to check if Rail exits are currently aligned between CrossRail and other
+Rail subclasses.
+Removed print statements in validDir method of Rail class.
+
+##########
+# Step 8
+
+Code Affected: Train, Car, Caboose, Engine
+
+Flaws:
+Train class addToTrain method downcasts the first Car added as Engine, but that creates
+vulnerability to error if the user actually adds a Caboose.
+Engine and Caboose have no functional differences except for color.
+Speed of Train relies only on delay but not any other aspects such as weight.
+Forward variable in Train not used.
+
+Fixes:
+Add Engine instance during instantiation and let user add any other Cars on their own.
+Added weight and power variables to the Engine.
+Added weight to the Caboose.
+Added getPower method to Engine.
+Modified acceleration methods based on total weight the Train and power of Engine.
+Removed Forward variable.
+
+##########
+# Step 9
+
+Code Affected: Train, Track
+
+Flaws:
+addToTrain method incorrect.
+Step N: Need more track.
+
+Fixes:
+Made the last train the Engine in Train constructor and corrected addToTrain.
+Added 6 new Rails and modified 2 existing Rails and connected them with connectRail.
+
+##########
+# Step 10
+
+Code Affected: Track, TrainSimulation
+
+Flaws:
+Track class Track() method is too large. Instantiates a prebuilt track for the user, but this
+makes it difficult to extend later on when the user wants to add/modify the rails.
+Prebuilt tracks were connected using a method that required manual labor in knowing which way to
+connect rails.
+User must interact with Track and TrainSimulation classes, which makes confusion
+more likely and errors to occur.
+connectRail() method is easier to use than the connectRails() method.
+
+Fixes:
+
+Removed the unnecessary instantiation of Rails and call to addToPanel method in Track() method.
+Created a new private method defaultTrack that creates and returns the prebuilt track when needed.
+Created a new public method addRail in Track class so that if the user wants to add more Rail to an
+existing Track object they can do it through TrainSimulation.
+Added an initializer method to add the finished track to the panel for drawing.
+The user can now just interact with TrainSimulation to extend/modify the track and trains.
+
+##########
+# Step 11
+
+Code Affected: SwitchRail, CornerRail, StraightRail,
+TwoEndRail, Rail, EmptyRail, Track, TrainSimulation, Car
+
+Flaws:
+
+SwitchRail is not really an abstract class because it doesn't have any unimplemented methods and
+should be a class that's instantiated. The extra subclasses that inherit from SwitchRail also
+do not add any new functionality, only changing the values of class variables and methods.
+This is also the case for CornerRail, StraightRail and TwoEndRail.
+setLoc() method exists in CrossRail, but it should be inherited rather than overridden since it is
+mostly duplicate code. It also contains code for x,y value setting which deviates from its purpose.
+
+Fixed:
+
+Changed Track method defaultTrack to use new instantiation convention.
+
+
+Modified StraightRail, CornerRail, CrossRail, SwitchRail to be directly instantiated. Replaced the
+constructors for TwoEndRail, StraightRail, CornerRail, CrossRail, SwitchRail so that
+the direction parameters in their constructors were replaced with a String dir denoting its type of
+directions (i.e. WENRail -> SwitchRail("WEN")).
+
+Added setDirection method in TwoEndRail, SwitchRail, CrossRail, to accommodate for new instantiation
+convention.
+
+Added package-private direction() method and String direction variable in Rail so that the Car class
+draw() method can access the direction of any Rail to determine the type of rectangle to draw.
+
+Changed the Car draw() method to use direction() instead of instanceof.
+
+Moved x,y value setting in setLoc() to be set in the beginning for CrossRail. Removed setLoc().
+
+Modified TrainSimulation to use the new instantiation convention.
+
+Modified EmptyRail to return an empty string when implementing direction() from Rail class.
+
+REMOVED: All the subclasses of StraightRail, SwitchRail, CornerRail
+
+##########
+# Step 12
+
+Code Affected: Car, CornerRail, CrossRail, Engine, GridLoc, Rail, StraightRail, SwitchRail, Track,
+TrackPanel, Train, TrainSimulation, TwoEndRail
+
+Flaws:
+
+(could be local -> should not be a class variable)
+(could be reduced to one line -> code not written efficiently)
+(could have reduced visibility/private -> exists code that shouldn't be exposed as much as it is)
+
+Car class access modifiers for variables could have more reduced visibility since they are not used
+directly by the user.
+
+Car class method switchStraight() could be reduced to one line.
+
+CornerRail variable arcAngle could be a local variable instead of a class variable.
+
+CrossRail x,y variables could be a local variable instead of a class variable.
+CrossRail class variables could be private since they are not used outside class.
+
+Engine getPower() method could have reduced visibility.
+
+GridLoc class variables row, col could have reduced visibility.
+
+Rail class variable size could be turned into a local variable.
+Rail class variable haveATrain, currentCar could be private.
+Rail class method occupied(), enter(), leave(), validDir() could be package-private rather than
+public.
+Rail enter() method returns true, but is never used.
+Rail validDir() method could be simplified to one line.
+
+StraightRail class variables x,y could be made private.
+
+SwitchRail class variables x,y, startAngle, (neighbour1/2/3) could be made private.
+SwitchRail class variable arcAngle could be made into a local variable.
+SwitchRail class method setDirection(), checkDirection(), could be made private.
+SwitchRail isGoingStraight() could be made package-private.
+
+Track class variable trackPanel could be made private.
+Track class variable running is not needed since the client will interface with the GUI which does
+not have a button for creating a new Rail.
+Track class variables runStopButton, quitButton, accelButton, decelButton, accelLotsButton,
+decelLotsButton can be local variables instead.
+Track class method addCar(), addTrain(), addRail() and addTrain() could be made package-private.
+Track class method connectRails() could be made private since it's only used within the class.
+
+TrackPanel class variable rails could be made local.
+TrackPanel class method addToPanel() could be made package-private.
+
+Train class variable theTrack could be local inside addToTrack() method.
+Train class variable numCars not used at all.
+Train class method addToTrain(), setSpeed(), addToTrack() accelerateALot(), decelerateALot(),
+accelerate(), decelerate() could be package-private.
+
+TrainSimulation has unnecessary usage of static and public since there is no other java file that
+accesses TrainSimulation and uses the variables tracks and trains.
+
+TwoEndRail class variables end1/2, neighbour1/2 can be made private.
+
+
+
+Fixes:
+
+Modified Car class variables to have as reduced visibility as possible. Reduced switchStraight()
+to one line.
+
+arcAngle variable was made into a local variable inside the draw method of CornerRail.
+
+Reduced visibility of variables in CornerRail as well.
+
+CrossRail x,y class variables made into local variables inside the draw method.
+CrossRail class variables made private.
+
+Reduced visibility of Engine getPower() method.
+
+Reduced visibility of GridLoc row, col class variables.
+
+Rail class variable size was made into a local variable inside the Rail constructor.
+Rail class method occupied(), enter(), leave(), validDir() changed to package-private.
+Rail enter() method modified to return void instead of boolean.
+Rail validDir() method simplified to one line.
+Rail class variable haveATrain, currentCar made private.
+
+StraightRail class variables x,y made private.
+
+SwitchRail class variables x,y, startAngle, (neighbour1/2/3) made private.
+SwitchRail class variable arcAngle made into a local variable.
+SwitchRail class method setDirection(), checkDirection() and isGoingStraight() made private.
+
+Track class variable trackPanel made private.
+Track class variable running removed.
+Track class variables runStopButton, quitButton, accelButton, decelButton, accelLotsButton,
+decelLotsButton made as local variables instead.
+Track class method addCar(), addTrain(), addRail() and addTrain() made package-private.
+Track class method connectRails() made private.
+
+TrackPanel class variable rails made local inside addToPanel().
+TrackPanel class method addToPanel() made package-private.
+
+Train class variable theTrack made local inside addToTrack() method.
+Train class variable numCars removed.
+Train class method addToTrain(), setSpeed(), addToTrack(), accelerateALot(), decelerateALot(),
+accelerate(), decelerate() made package-private.
+
+TrainSimulation class variables tracks and trains were made private and non-static.
+
+TwoEndRail class variables end1/2, neighbour1/2 made private.
+
+##########
+# Step 13
+
+Code Affected: All java files.
+
+Flaws:
+
+CrossRail constructor call to setLoc() is unnecessary since super(loc) already sets the location.
+Some unnecessary comments and unused import statements can be removed.
+No JavaDocs.
+Rail constructor did not have an instantiation for the size of a rectangle.
+SwitchRail constructor with Direction parameters is not needed.
+
+Fixed:
+
+Removed setLoc() call from CrossRail constructor.
+Removed SwitchRail constructor that used Direction parameters.
+
+Removed unused import statements.
+
+Added JavaDocs for most functions and variables aside from toString().
+
+Reformatted Code.
